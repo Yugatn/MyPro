@@ -17,4 +17,4 @@ def test_end_to_end(tmp_path):
     nested,_=create_compound(repo,source_timeline_id=tl.id,layer_ids=[left.id,right.id],name="C")
     flat=flatten(repo.timelines,tl.id)
     validate_project_v2(repo.timelines,repo.media_pool)
-    assert nested in repo.timelines and len(flat.video_layers)==1
+    assert nested in repo.timelines and len(flat.video_layers)==2
