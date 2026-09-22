@@ -1,5 +1,7 @@
 from pathlib import Path
+
 import pytest
+
 from core.project.events import EventLog, EventLogCorrupt, SnapshotStore
 
 def test_chain_and_reopen(tmp_path:Path):
