@@ -29,6 +29,8 @@ Runs analyzers as versioned computations. The analysis layer produces observatio
 
 The intended execution model is a DAG. Each node declares its analyzer identity, version, code hash, configuration hash, input artifacts and output artifacts. This supports caching and invalidation.
 
+Cinema Catharsis is a domain measurement layer in Analysis. It operates on the same observations and exact time ranges as MyPro fragments and reports descriptive content metrics without silently inferring viewer response or harm.
+
 ### Evidence and Provenance
 
 Evidence connects results to their source and derivation. Provenance is content-addressed where practical and may map to C2PA and W3C PROV.
@@ -63,7 +65,7 @@ For low-risk workflows, a policy may authorize automatic application. Such autom
 
 ## 4. Time model
 
-Canonical project time uses exact rational values. Intervals are half-open, written conceptually as `[start, end)`.
+Canonical project time uses exact rational values. Intervals are half-open, written conceptually as [start, end).
 
 Adapters may expose frame, audio-sample, nanosecond or float-second representations, but conversions must be explicit and deterministic.
 
@@ -94,9 +96,11 @@ An Observation carries:
 - analyzer identity;
 - provenance.
 
-`not_analyzed`, `failed` and `unknown` are meaningful states. They must not be silently treated as negative evidence.
+not_analyzed, failed and unknown are meaningful states. They must not be silently treated as negative evidence.
 
 Domain formulas declare their inputs, assumptions, version, valid domain, output semantics and uncertainty behavior. MyPro does not define one universal risk score.
+
+Cinema Catharsis follows the same boundary. Its metrics describe coded media content and coding quality. They do not constitute automatic estimates of viewer emotion, audience attitude, psychological harm or causal effect.
 
 ## 7. Plugin security
 
@@ -124,17 +128,17 @@ A capability grants technical authority only within its declared scope. Policy r
 - MLT may become a rendering backend.
 - EDL/XML/AAF are explicit import/export boundaries.
 
-See `docs/INTEROP.md`.
+See docs/INTEROP.md.
 
 ## 9. Privacy
 
 Local-first processing is preferred. Network access is explicit. Sensitive processing should be minimized, scoped and auditable.
 
-See `docs/PRIVACY.md` and `docs/THREAT_MODEL.md`.
+See docs/PRIVACY.md and docs/THREAT_MODEL.md.
 
 ## 10. Verification
 
-The architecture is defined by executable invariants rather than comments alone. The initial invariant catalogue is in `spec/invariants.md`.
+The architecture is defined by executable invariants rather than comments alone. The initial invariant catalogue is in spec/invariants.md.
 
 Future verification work includes:
 
