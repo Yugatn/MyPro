@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Yugatn/MyPro/schemas/capability.schema.json",
+  "title": "MyPro Capability",
+  "type": "object",
+  "required": ["id", "operation", "resource", "granted"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "operation": {"type": "string", "minLength": 1},
+    "resource": {"type": "string", "minLength": 1},
+    "scope": {"type": ["object", "null"]},
+    "expires_at": {"type": ["string", "null"]},
+    "granted": {"type": "boolean"}
+  },
+  "additionalProperties": false
+}
