@@ -1,87 +1,146 @@
 # Architecture
 
-## 1. Core idea
+## 1. Core thesis
 
-MyPro is built around a stable intermediate representation of a video project.
+MyPro is a verifiable content and decision environment, not merely a video editor.
 
-The central object is the Montage Model. It describes media references, tracks, clips, timing, transitions, audio decisions, titles and other editable operations without tying the project to one particular UI or renderer.
+The canonical architecture separates:
 
-This separation allows the same project to be processed by a desktop editor, automated tools, AI services and interchange adapters.
+1. content identity;
+2. observations;
+3. interpretations;
+4. findings;
+5. proposals;
+6. decisions;
+7. applied actions;
+8. recoverable revisions.
 
-## 2. Layers
+This prevents AI, analyzers or UI code from silently becoming the source of truth.
 
-### Media layer
+## 2. Layer boundaries
 
-Responsible for:
-- source files;
-- media identity;
-- technical metadata;
-- hashes;
-- time ranges;
-- proxy relationships.
+### Identity and Media
 
-### Analysis layer
+Identifies Assets and records technical metadata, hashes, external references and proxy relationships.
 
-Produces observations rather than silently changing the edit:
-- scene boundaries;
-- speech transcripts;
-- subtitles;
-- shot descriptions;
-- duplicate and near-duplicate candidates;
-- audio measurements;
-- semantic tags.
+### Analysis
 
-### Montage Model
+Runs analyzers as versioned computations. The analysis layer produces observations and findings, not silent project mutations.
 
-The canonical editable representation.
+The intended execution model is a DAG. Each node declares its analyzer identity, version, code hash, configuration hash, input artifacts and output artifacts. This supports caching and invalidation.
 
-It should be deterministic, serializable and independently testable.
+### Evidence and Provenance
 
-### Application layer
+Evidence connects results to their source and derivation. Provenance is content-addressed where practical and may map to C2PA and W3C PROV.
 
-Provides human interaction:
-- media browser;
-- timeline;
-- preview;
-- inspector;
-- AI suggestions;
-- undo and redo;
-- export controls.
+### Project
 
-### Integration layer
+The project has a schema version, append-only event history, snapshots and explicit migration boundaries.
 
-Connects MyPro to external technologies such as FFmpeg and OpenTimelineIO.
+### Montage
 
-External systems must not become the hidden source of truth for the project.
+Montage Model is the canonical editable representation of tracks, clips, timing, transitions, audio, subtitles, effects and markers.
 
-## 3. AI boundary
+External interchange formats do not replace the canonical model.
 
-AI may propose:
-- clip selection;
-- ordering;
-- trimming;
-- subtitles;
-- music and sound suggestions;
-- rough cuts;
-- semantic metadata.
+### AI
 
-AI proposals must be represented as explicit project changes or suggestions. They must remain inspectable, reversible and rejectable by the user.
+AI consumes project context and analysis and produces explicit Proposal objects. AI does not directly mutate canonical project state.
 
-## 4. First implementation
+### Runtime and Security
 
-The first implementation deliberately avoids a large editor.
+Extensions run behind capability boundaries. Default policy is deny by default. Sensitive operations are mediated by Core.
 
-Milestone 0 consists of:
-1. Python package structure.
-2. Media manifest model.
-3. Montage Model draft.
-4. JSON serialization.
-5. Basic validation.
-6. Tests.
-7. FFprobe adapter as the first real media integration.
+### Applications
 
-## 5. Future architecture
+Desktop, mobile, CLI and future research/security applications consume the same core contracts.
 
-Later stages may introduce a high-performance media engine in Rust or C++, desktop UI, mobile UI, GPU acceleration, plugin isolation, camera integration, cloud collaboration and AI providers.
+## 3. Formal control boundary
 
-Those components are intentionally not required for the first milestone.
+**AI or analyzer proposes. Core validates. Human or policy decides. Action applies. Project records.**
+
+For low-risk workflows, a policy may authorize automatic application. Such automation must still create an auditable decision and a recoverable revision.
+
+## 4. Time model
+
+Canonical project time uses exact rational values. Intervals are half-open, written conceptually as `[start, end)`.
+
+Adapters may expose frame, audio-sample, nanosecond or float-second representations, but conversions must be explicit and deterministic.
+
+The model must eventually cover VFR, drop-frame timecode, audio sample time, multi-camera synchronization and external sensor synchronization.
+
+## 5. Project persistence
+
+The project format is designed around:
+
+- append-only JSONL events;
+- periodic snapshots;
+- content-addressed derived artifacts;
+- atomic writes;
+- explicit schema versions;
+- deterministic migrations;
+- recoverable backups.
+
+A migration that can replace canonical state must first establish a verified recovery point.
+
+## 6. Analysis semantics
+
+An Observation carries:
+
+- value;
+- confidence;
+- uncertainty;
+- status;
+- analyzer identity;
+- provenance.
+
+`not_analyzed`, `failed` and `unknown` are meaningful states. They must not be silently treated as negative evidence.
+
+Domain formulas declare their inputs, assumptions, version, valid domain, output semantics and uncertainty behavior. MyPro does not define one universal risk score.
+
+## 7. Plugin security
+
+Capabilities are scoped by resource and operation. Future runtime implementations may use WASM and/or process isolation.
+
+Baseline controls:
+
+- deny by default;
+- explicit network capability;
+- resource-scoped access;
+- signed plugins for trusted distribution;
+- dependency pinning and SBOM;
+- capability audit log;
+- malformed-media and parser fuzzing.
+
+A capability grants technical authority only within its declared scope. Policy remains a separate layer.
+
+## 8. Interoperability
+
+- FFprobe populates MediaManifest technical data.
+- FFmpeg is an external media backend.
+- OpenTimelineIO is an editorial interchange boundary.
+- C2PA is a provenance interoperability target.
+- W3C PROV provides provenance mapping concepts.
+- MLT may become a rendering backend.
+- EDL/XML/AAF are explicit import/export boundaries.
+
+See `docs/INTEROP.md`.
+
+## 9. Privacy
+
+Local-first processing is preferred. Network access is explicit. Sensitive processing should be minimized, scoped and auditable.
+
+See `docs/PRIVACY.md` and `docs/THREAT_MODEL.md`.
+
+## 10. Verification
+
+The architecture is defined by executable invariants rather than comments alone. The initial invariant catalogue is in `spec/invariants.md`.
+
+Future verification work includes:
+
+- property-based tests;
+- parser fuzzing;
+- TLA+ models for atomicity and capability semantics;
+- reproducible builds;
+- golden datasets for analysis;
+- deterministic replay of project events.
