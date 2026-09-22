@@ -5,10 +5,12 @@ from pathlib import Path
 from core.identity import hash_bytes
 from core.project import Project
 from core.project.time import RationalTime, TimeRange
-from core.montage.model import MediaAsset,new_clip_layer,new_timeline
-from core.montage.repository import MontageRepository
-from core.montage.operations import split_layer,create_compound
+
+from core.identity import hash_bytes
 from core.montage.flatten import flatten
+from core.montage.model import MediaAsset, new_clip_layer, new_timeline
+from core.montage.operations import create_compound, split_layer
+from core.montage.repository import MontageRepository
 from core.montage.validation import validate_project_v2
 
 
@@ -25,7 +27,7 @@ def main(work: Path):
     b=new_clip_layer(asset_id="asset_b",timeline_range=TimeRange(RationalTime(20),RationalTime(35)),name="broll")
     repo.add_video_layer(tl.id,v1,a); repo.add_video_layer(tl.id,v1,b)
     left,right=split_layer(repo,timeline_id=tl.id,track_id=v1,layer_id=a.id,at=RationalTime(8))
-    nested,compound=create_compound(repo,source_timeline_id=tl.id,layer_ids=[left.id,right.id],name="interview_block")
+    nested,_compound=create_compound(repo,source_timeline_id=tl.id,layer_ids=[left.id,right.id],name="interview_block")
     flat=flatten(repo.timelines,tl.id)
     validate_project_v2(repo.timelines,repo.media_pool)
     digest=project.backup(label="demo")
