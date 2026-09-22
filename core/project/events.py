@@ -61,6 +61,9 @@ class EventLog:
         self._tip,self._count=digest,self._count+1
         return event
 
+    def read_all(self):
+        return list(self.iter_events())
+
     def recover_tail(self):
         if not self.path.exists(): return
         data=self.path.read_bytes()
