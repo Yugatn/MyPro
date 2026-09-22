@@ -29,10 +29,9 @@ class BackupStore:
         package = self.backups / digest.hex
         package.mkdir(parents=True, exist_ok=True)
         project_copy = package / "project"
-        project_copy.mkdir(parents=True, exist_ok=True)
-        if any(project_copy.iterdir()):
-            return digest
         if not project_copy.exists():
+            project_copy.mkdir(parents=True, exist_ok=True)
+        if not any(project_copy.iterdir()):
             for child in self.root.iterdir():
                 if child.name == "backups":
                     continue
@@ -41,8 +40,14 @@ class BackupStore:
                     shutil.copytree(child, destination)
                 else:
                     shutil.copy2(child, destination)
+        manifest = {
+            "digest": str(digest),
+            "payload_hash": str(hash_canonical(payload)),
+            "event_count": event_log.count,
+            "tip_hash": event_log.tip_hash,
+        }
         (package / "manifest.json").write_text(
-            json.dumps({"digest": str(digest), "payload_hash": str(hash_canonical(payload))}, indent=2),
+            json.dumps(manifest, indent=2, sort_keys=True),
             encoding="utf-8",
         )
         return digest
@@ -56,7 +61,9 @@ class BackupStore:
             return False
         expected_count = int(payload.get("event_count", 0))
         if expected_count == 0:
-            return payload.get("tip_hash") is None
+            return payload.get("tip_hash") is None and event_log.count == 0
+        if event_log.count < expected_count:
+            return False
         previous = None
         for index, event in enumerate(event_log.iter_events(), start=1):
             previous = event.event_hash
