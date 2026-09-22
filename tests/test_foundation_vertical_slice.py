@@ -60,7 +60,7 @@ def test_vertical_slice_project_to_restore_and_tamper(tmp_path: Path):
 
     snapshot = root / "snapshots" / f"{digest.hex}.json"
     original = snapshot.read_text(encoding="utf-8")
-    snapshot.write_text(original.replace('"events":', '"events":', 1) + "\n", encoding="utf-8")
+    snapshot.write_text(original.replace('"schema_version": "0.4"', '"schema_version": "tampered"', 1), encoding="utf-8")
     assert not project.verify_backup(digest)
 
 
