@@ -1,7 +1,7 @@
 """Append-only hash-chained event log and atomic snapshots."""
 from __future__ import annotations
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 import json
 import os
 from pathlib import Path
@@ -56,7 +56,7 @@ class EventLog:
         if type is None or payload is None:
             raise TypeError("append requires an event or type/payload")
         event_id=event_id or f"evt_{uuid.uuid4().hex}"
-        created_at=datetime.now(timezone.utc).isoformat()
+        created_at=datetime.now(UTC).isoformat()
         body=dict(payload); body.setdefault("_actor",actor)
         digest=self._event_hash(event_id,type,body,self._tip,"0.4",created_at)
         event=ProjectEvent(event_id,type,body,self._tip,digest,created_at=created_at)
