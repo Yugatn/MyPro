@@ -18,8 +18,8 @@ class ProjectEvent:
     event_id: str
     event_type: str
     payload: dict[str, Any]
-    prev_hash: ContentHash | None
-    event_hash: ContentHash
+    prev_hash: ContentHash | None = None
+    event_hash: ContentHash | None = None
     schema_version: str = "0.4"
     created_at: str = ""
 
@@ -47,8 +47,14 @@ class EventLog:
             "prev_hash":str(prev_hash) if prev_hash else None,
             "schema_version":schema_version,"created_at":created_at})
 
-    def append(self,*,type,payload,actor="system",event_id=None):
+    def append(self, event: ProjectEvent | None = None, *, type=None, payload=None, actor="system", event_id=None):
         import uuid
+        if event is not None:
+            type = event.event_type
+            payload = event.payload
+            event_id = event.event_id
+        if type is None or payload is None:
+            raise TypeError("append requires an event or type/payload")
         event_id=event_id or f"evt_{uuid.uuid4().hex}"
         created_at=datetime.now(timezone.utc).isoformat()
         body=dict(payload); body.setdefault("_actor",actor)
