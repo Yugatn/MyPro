@@ -1,6 +1,6 @@
 from __future__ import annotations
 from dataclasses import dataclass, field, asdict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 
@@ -33,7 +33,7 @@ class ImportManifest:
     source_format: str
     source_version: str | None
     source_hash: str
-    imported_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    imported_at: str = field(default_factory=lambda: datetime.now(UTC).isoformat())
     statistics: dict[str,int] = field(default_factory=dict)
     losses: list[LossyTransformation] = field(default_factory=list)
     ambiguities: list[Ambiguity] = field(default_factory=list)
