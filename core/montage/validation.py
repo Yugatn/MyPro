@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from itertools import pairwise
 from .model import MontageProject, Timeline
 
 
@@ -57,7 +58,7 @@ def validate_timeline(tl: Timeline) -> None:
                 raise InvariantViolation("I_layer_non_negative_time")
 
         ordered = sorted(track.layers, key=lambda x: x.range.start.fraction)
-        for a, b in zip(ordered, ordered[1:]):
+        for a, b in pairwise(ordered):
             if a.range.end.fraction > b.range.start.fraction:
                 raise InvariantViolation("I_layer_no_overlap_on_track")
 
