@@ -1,6 +1,5 @@
 """Event-backed montage repository."""
 from __future__ import annotations
-from dataclasses import replace
 from core.project.events import EventLog
 from .model import MediaAsset, Timeline, VideoLayer, VideoTrack, AudioTrack
 
