@@ -4,7 +4,7 @@ from __future__ import annotations
 from uuid import uuid4
 
 from core.project.time import RationalTime, TimeRange
-from .model import LayerKind, Timeline, VideoLayer, VideoTrack, new_compound_layer
+from .model import Timeline, VideoLayer, new_compound_layer
 from .repository import MontageRepository
 
 
