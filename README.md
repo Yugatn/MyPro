@@ -19,8 +19,23 @@ The runnable vertical slice now includes:
 - montage invariant validation;
 - Universal Import Layer with an OTIO adapter;
 - import loss, mapping and source provenance reporting;
+- reusable semantic content fragments;
+- Viewer-Editor interaction primitives;
+- Cinema Catharsis descriptive measurement formulas;
 - CLI and end-to-end demo;
 - automated foundation tests.
+
+## Cinema Catharsis
+
+Cinema Catharsis is a connected research and measurement layer for MyPro.
+
+MyPro stores the evidence substrate: source media, exact time ranges, observations, fragments, provenance, versions and editorial decisions. Cinema Catharsis defines a descriptive ontology and formal measurements over that evidence.
+
+The current measurement layer covers weighted event count, category duration, screen-time share, event density, coverage, time density, repeatability, relative category distribution, union duration, normalized entropy, coding uncertainty and duration-based category co-occurrence.
+
+The methodology keeps content, exposure, response, effect and harm separate. Content measurements do not automatically become claims about viewer psychology, audience attitude, harm or causality.
+
+See docs/CINEMA_CATHARSIS.md and docs/CINEMA_CATHARSIS_MYPRO.md.
 
 ## Quick start
 
@@ -48,6 +63,7 @@ Import is proposal-oriented. The default import command performs a dry run and d
 MyPro
 ├── Media
 ├── Analysis
+│   └── Cinema Catharsis
 ├── Evidence
 ├── Project
 ├── Montage
@@ -69,7 +85,9 @@ OpenTimelineIO is treated as interchange. The canonical MyPro model remains inde
 - compound timeline references cannot form cycles;
 - clip source references must resolve;
 - imports report loss and mapping explicitly;
-- import adapters produce evidence/proposals rather than directly changing project state.
+- import adapters produce evidence/proposals rather than directly changing project state;
+- Cinema Catharsis metrics preserve source provenance and coding uncertainty;
+- Cinema Catharsis content metrics are not silently converted into audience-effect or harm claims.
 
 ## Design boundary
 
@@ -77,7 +95,7 @@ AI and analyzers produce proposals. Core validation and policy are separate from
 
 ## Next implementation layer
 
-The next production-facing slice is FFmpeg render verification, followed by a minimal Editorial Model, Intent Model and MCP authorization boundary.
+The next production-facing slice is FFmpeg render verification, followed by the live ingest and rolling-buffer runtime, a minimal Editorial Model, Intent Model and MCP authorization boundary.
 
 ## License
 
