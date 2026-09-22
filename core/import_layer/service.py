@@ -86,8 +86,19 @@ class ImportService:
         )
 
     def apply(self, project: Project, proposal: ImportProposal, result: ImportResult, *, approved: bool) -> str:
+        if result.id != proposal.result_id:
+            raise ValueError("proposal/result mismatch")
+        if result.manifest.source.source_hash != proposal.source_hash:
+            raise ValueError("proposal/source hash mismatch")
         if not approved:
             raise PermissionError("import proposal was not approved")
+        decisions = [
+            event for event in project.log.iter_events()
+            if event.event_type == "decision.recorded"
+            and event.payload.get("proposal_id") == proposal.id
+        ]
+        if not decisions or decisions[-1].payload.get("approved") is not True:
+            raise PermissionError("no recorded approval for import proposal")
         revision_id = new_id("revision")
         project.snapshot({"revision_id": revision_id, "candidate": result.canonical_candidate})
         project.append_event(
