@@ -2,30 +2,10 @@
 
 MyPro provenance records the derivation of observations, findings, proposals, actions and exported artifacts.
 
-A provenance record SHOULD identify:
+A provenance record identifies inputs and hashes, operation or analyzer identity, software version, code hash, configuration hash, environment when material, outputs, timestamp and parent provenance records.
 
-- input artifact ids and hashes;
-- operation or analyzer id;
-- software/model version;
-- code hash;
-- configuration hash;
-- environment information when material;
-- output ids;
-- timestamp;
-- parent provenance records;
-- optional signature.
+Persisted provenance nodes are content-addressed. A provenance.link event binds the node hash and parent relationships to the append-only project history.
 
-The resulting graph is content-addressed and can be represented as a Merkle-style DAG.
-
-## Interoperability
-
-The model is designed to support mappings to:
-
-- C2PA / Content Credentials for content provenance;
-- W3C PROV concepts for provenance interchange.
-
-These are interoperability targets, not dependencies of the core.
-
-## Evidence rule
+The resulting graph can be represented as a Merkle-style DAG and mapped to C2PA or W3C PROV for interoperability.
 
 A provenance record describes how a result was produced. It does not prove that the result is correct.

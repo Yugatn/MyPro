@@ -8,10 +8,11 @@
     "format": {"const": "mypro"},
     "schema_version": {"type": "string", "minLength": 1},
     "project_id": {"type": "string", "minLength": 1},
-    "event_log": {"type": "string"},
+    "created_at": {"type": "string", "minLength": 1},
+    "event_log": {"const": "events.jsonl"},
     "snapshot_head": {"type": ["string", "null"]},
     "content_hash": {"type": ["string", "null"]},
-    "timebase": {"type": "string"},
+    "timebase": {"type": ["string", "null"]},
     "media": {"type": "array"},
     "external_references": {"type": "array"},
     "capabilities": {"type": "array"}

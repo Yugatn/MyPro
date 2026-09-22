@@ -1,6 +1,6 @@
 [project]
 name = "mypro"
-version = "0.1.0"
+version = "0.3.0"
 description = "Open AI-assisted video editing platform"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -8,13 +8,24 @@ license = { file = "LICENSE" }
 authors = [
   { name = "Yugatn" }
 ]
-dependencies = []
+dependencies = [
+  "blake3>=1.0",
+  "ulid-py>=1.1"
+]
 
 [project.optional-dependencies]
+interchange = [
+  "opentimelineio>=0.17"
+]
 dev = [
   "pytest>=8.0",
-  "ruff>=0.6"
+  "hypothesis>=6.100",
+  "ruff>=0.6",
+  "mypy>=1.10"
 ]
+
+[project.scripts]
+mypro-backup = "tools.project_backup:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

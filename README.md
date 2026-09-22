@@ -16,6 +16,14 @@
 
 Наблюдение не является выводом. Вывод не является приговором. Предложение не является изменением.
 
+## Foundation v0.3
+
+Foundation v0.3 extends the evidence core with explicit content-hash algorithms, hash-chained event durability, atomic content-addressed snapshots, scoped capabilities, transactional analyzer failure semantics, persistent provenance links, point-in-time backups, deterministic migration contracts, rational synchronization domains and a proposal-controlled universal import layer.
+
+The Universal Import Layer treats external project files as evidence-producing adapters. Import loss, mapping decisions and media relinking are explicit reports. An adapter cannot directly mutate project state.
+
+Backup recovery is available through `mypro-backup create`, `mypro-backup verify` and `mypro-backup restore`. The CI pipeline exercises the core invariants and property-based event-chain tests.
+
 ## Foundation v0.2
 
 В репозитории уже заложены:

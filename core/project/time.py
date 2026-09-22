@@ -1,7 +1,4 @@
-"""Exact project time primitives.
-
-Canonical time is rational. Float seconds are an interchange convenience only.
-"""
+"""Exact canonical project time and synchronization domains."""
 
 from __future__ import annotations
 
@@ -11,8 +8,6 @@ from fractions import Fraction
 
 @dataclass(frozen=True, order=True)
 class RationalTime:
-    """An exact time value represented as numerator/denominator."""
-
     numerator: int
     denominator: int = 1
 
@@ -33,8 +28,6 @@ class RationalTime:
 
 @dataclass(frozen=True)
 class TimeRange:
-    """Half-open interval [start, end)."""
-
     start: RationalTime
     end: RationalTime
 
@@ -48,3 +41,31 @@ class TimeRange:
 
     def contains(self, value: RationalTime) -> bool:
         return self.start.fraction <= value.fraction < self.end.fraction
+
+
+@dataclass(frozen=True)
+class ClockRef:
+    clock_id: str
+    epoch: str
+    rate_hz: RationalTime | None = None
+
+
+@dataclass(frozen=True)
+class SyncPoint:
+    clock: ClockRef
+    media_time: RationalTime
+    clock_time: RationalTime
+
+
+@dataclass(frozen=True)
+class SyncGroup:
+    id: str
+    members: tuple[str, ...]
+    sync_points: tuple[SyncPoint, ...]
+    external_clock: ClockRef | None = None
+
+    def __post_init__(self) -> None:
+        if not self.members:
+            raise ValueError("sync group must contain at least one member")
+        if len(set(self.members)) != len(self.members):
+            raise ValueError("sync group members must be unique")

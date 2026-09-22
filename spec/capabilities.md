@@ -2,34 +2,15 @@
 
 Capabilities are scoped technical authorities.
 
-A capability declares:
+Scope matching is segment based. Examples include *, media:*, media:blake3:<hex>, project:<id> and project:<id>:analysis.
 
-- capability id;
-- subject;
-- resource scope;
-- operations;
-- issued_at;
-- expires_at;
-- revocable;
-- delegable;
-- parent capability when delegated.
+Delegation is monotonic: a child capability cannot gain operations or a broader resource scope than its parent. A delegated capability cannot outlive its parent.
 
-## Scope
+A capability is a technical authority, not a policy decision. Policy remains a separate decision layer.
 
-Resource scope should be as narrow as practical, for example a specific asset hash rather than an entire filesystem.
+Revocation is checked at use time and does not require restarting Core.
 
-## Revocation
-
-Core maintains revocation state and checks it at sensitive operations. Revocation does not require restarting Core.
-
-## Delegation
-
-Delegation can only narrow authority. A child capability cannot gain operations, resources or lifetime broader than its parent.
-
-## Invariants
-
-**I_capability_no_amplification** — delegation cannot increase authority.
-
-**I_capability_revocable** — an active capability can be denied before expiry.
-
-**I_plugin_capability_bound** — operations outside the granted scope are rejected.
+Invariants:
+- I_capability_no_amplification
+- I_capability_revocable
+- I_plugin_capability_bound
