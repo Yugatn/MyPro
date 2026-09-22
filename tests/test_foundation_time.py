@@ -1,6 +1,8 @@
 from fractions import Fraction
+
 import pytest
-from core.project.time import RationalTime,TimeRange
+
+from core.project.time import RationalTime, TimeRange
 
 def test_exact_arithmetic():
     a=RationalTime.from_seconds(Fraction(1,3)); b=RationalTime.from_seconds(Fraction(2,3))
