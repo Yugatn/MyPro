@@ -1,0 +1,1 @@
+"""WASM plugin boundary placeholder."""
