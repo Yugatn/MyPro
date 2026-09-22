@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Yugatn/MyPro/schemas/proposal.schema.json",
+  "title": "MyPro Proposal",
+  "type": "object",
+  "required": ["proposal_id", "intent", "provenance_id", "reversible"],
+  "properties": {
+    "proposal_id": {"type": "string", "minLength": 1},
+    "intent": {"type": "string", "minLength": 1},
+    "constraints": {"type": "array", "items": {"type": "string"}},
+    "alternatives": {"type": "array"},
+    "confidence": {"type": ["number", "null"], "minimum": 0, "maximum": 1},
+    "provenance_id": {"type": "string", "minLength": 1},
+    "reversible": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}
