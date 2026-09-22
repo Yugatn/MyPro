@@ -165,11 +165,11 @@ class SnapshotStore:
         self.directory = Path(directory)
         self.directory.mkdir(parents=True, exist_ok=True)
 
-    def write(self, payload: dict[str, Any], *, name: str = "snapshot") -> ContentHash:
+    def write(self, payload: dict[str, Any], *, name: str = "snapshot", algorithm: str = "blake3") -> ContentHash:
         canonical = json.dumps(
             payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
         ).encode("utf-8")
-        digest = hash_bytes(canonical)
+        digest = hash_bytes(canonical, algorithm=algorithm)
         target = self.directory / f"{digest.algorithm}-{digest.hex}.json"
         if target.exists():
             return digest
