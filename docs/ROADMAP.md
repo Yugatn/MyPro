@@ -71,3 +71,21 @@ Across all phases:
 ## Principle
 
 Every phase must leave behind a usable, testable subsystem. UI features should not outrun the model, persistence and verification layers underneath them.
+
+## Foundation v0.3
+
+- [x] Concurrency model and deterministic event merge contract
+- [x] Ontology migration direction
+- [x] Determinism contract
+- [x] Evidence Bundle specification
+- [x] Policy Engine specification
+- [x] Extended time/synchronization model
+- [x] Analyzer Model Card specification
+- [x] Capability revocation/delegation model
+- [x] Privacy and ethical constraints as executable policy boundaries
+- [ ] Implement migration registry and lossless migration tests
+- [ ] Implement CRDT projection and causal metadata
+- [ ] Implement Evidence Bundle verifier
+- [ ] Implement Policy Engine evaluator
+- [ ] Implement capability issuer/revoker
+- [ ] Implement SyncGroup model
