@@ -1,9 +1,8 @@
 """Project container and persistence."""
 from __future__ import annotations
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 import json
-import shutil
 from pathlib import Path
 from core.identity import ContentHash, hash_canonical
 from .events import EventLog, SnapshotStore
@@ -28,13 +27,13 @@ class Project:
         self.backups_dir.mkdir(parents=True, exist_ok=True)
 
     @classmethod
-    def create(cls, root: str | Path) -> "Project":
+    def create(cls, root: str | Path) -> Project:
         root = Path(root)
         root.mkdir(parents=True, exist_ok=True)
         manifest = root / "manifest.json"
         if not manifest.exists():
             project_id = f"proj_{hash_canonical(str(root.resolve())).hex[:16]}"
-            data = ProjectManifest("0.4", project_id, datetime.now(timezone.utc).isoformat()).to_dict()
+            data = ProjectManifest("0.4", project_id, datetime.now(UTC).isoformat()).to_dict()
             tmp = manifest.with_suffix(".tmp")
             tmp.write_text(json.dumps(data, indent=2, sort_keys=True), encoding="utf-8")
             tmp.replace(manifest)
