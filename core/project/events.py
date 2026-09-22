@@ -170,10 +170,10 @@ class SnapshotStore:
             payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False
         ).encode("utf-8")
         digest = hash_bytes(canonical)
-        target = self.directory / f"{digest.hex}.json"
+        target = self.directory / f"{digest.algorithm}-{digest.hex}.json"
         if target.exists():
             return digest
-        temp = self.directory / f".{name}.{os.getpid()}.tmp"
+        temp = self.directory / f".{name}.{os.getpid()}.{digest.hex}.tmp"
         with temp.open("wb") as handle:
             handle.write(canonical)
             handle.flush()
@@ -187,7 +187,7 @@ class SnapshotStore:
         return digest
 
     def read(self, digest: ContentHash) -> dict[str, Any]:
-        target = self.directory / f"{digest.hex}.json"
+        target = self.directory / f"{digest.algorithm}-{digest.hex}.json"
         raw = target.read_bytes()
         if hash_bytes(raw) != digest:
             raise EventLogCorrupt(f"snapshot hash mismatch: {digest}")
