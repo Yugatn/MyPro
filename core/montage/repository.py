@@ -14,7 +14,9 @@ class MontageRepository:
         self._replay()
 
     def _record(self, event_type: str, payload: dict):
-        self.log.append(type=event_type, payload=payload)
+        event = self.log.append(type=event_type, payload=payload)
+        self._apply(event.event_type, event.payload)
+        return event
 
     def _replay(self):
         for event in self.log.iter_events():
