@@ -10,7 +10,7 @@ from enum import Enum
 from typing import Any
 import json
 
-from core.identity import ContentHash, hash_canonical, new_id if False else hash_canonical
+from core.identity import ContentHash
 from core.project.time import RationalTime, TimeRange
 
 
