@@ -1,5 +1,6 @@
-from core.identity import ContentHash, hash_bytes, hash_canonical
 import pytest
+
+from core.identity import ContentHash, hash_bytes, hash_canonical
 
 def test_algorithm_aware_hash():
     h=hash_bytes(b"hello")
