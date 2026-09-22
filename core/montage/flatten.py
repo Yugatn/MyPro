@@ -23,7 +23,9 @@ class FlatTimeline:
 def flatten(timelines: dict[str,Timeline], timeline_id: str) -> FlatTimeline:
     out=[]
     visiting=set()
-    def walk(tid, parent_start=RationalTime(0,1), path=()):
+    def walk(tid, parent_start=None, path=()):
+        if parent_start is None:
+            parent_start = RationalTime(0, 1)
         if tid in visiting:
             raise ValueError("timeline cycle")
         visiting.add(tid)
