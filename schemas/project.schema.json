@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Yugatn/MyPro/schemas/project.schema.json",
+  "title": "MyPro Project Manifest",
+  "type": "object",
+  "required": ["format", "schema_version", "project_id"],
+  "properties": {
+    "format": {"const": "mypro"},
+    "schema_version": {"type": "string", "minLength": 1},
+    "project_id": {"type": "string", "minLength": 1},
+    "event_log": {"type": "string"},
+    "snapshot_head": {"type": ["string", "null"]},
+    "content_hash": {"type": ["string", "null"]},
+    "timebase": {"type": "string"},
+    "media": {"type": "array"},
+    "external_references": {"type": "array"},
+    "capabilities": {"type": "array"}
+  },
+  "additionalProperties": true
+}
