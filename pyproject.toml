@@ -1,19 +1,26 @@
 [project]
 name = "mypro"
-version = "0.1.0"
-description = "Open AI-assisted video editing platform"
+version = "0.4.0"
+description = "Evidence Core for verifiable digital content"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { file = "LICENSE" }
-authors = [
-  { name = "Yugatn" }
+authors = [{ name = "Yugatn" }]
+dependencies = [
+  "blake3>=0.4",
+  "typer>=0.12",
+  "opentimelineio>=0.17"
 ]
-dependencies = []
+
+[project.scripts]
+mypro = "cli:main"
 
 [project.optional-dependencies]
 dev = [
   "pytest>=8.0",
-  "ruff>=0.6"
+  "hypothesis>=6.100",
+  "ruff>=0.6",
+  "mypy>=1.10"
 ]
 
 [tool.pytest.ini_options]
