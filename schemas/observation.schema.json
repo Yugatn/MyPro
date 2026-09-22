@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/Yugatn/MyPro/schemas/observation.schema.json",
+  "title": "MyPro Observation",
+  "type": "object",
+  "required": ["id", "type", "asset_id", "value", "confidence", "uncertainty", "status", "schema_version"],
+  "properties": {
+    "id": {"type": "string", "minLength": 1},
+    "type": {"type": "string", "minLength": 1},
+    "asset_id": {"type": "string", "minLength": 1},
+    "value": {},
+    "unit": {"type": ["string", "null"]},
+    "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+    "uncertainty": {},
+    "status": {"enum": ["observed", "not_analyzed", "failed", "unknown"]},
+    "validity": {
+      "type": ["object", "null"],
+      "properties": {
+        "from": {"type": "string"},
+        "to": {"type": "string"}
+      },
+      "additionalProperties": false
+    },
+    "provenance_id": {"type": ["string", "null"]},
+    "schema_version": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": true
+}
