@@ -19,13 +19,16 @@ class ProvenanceStore:
     def put(self, node: ProvenanceNode, *, actor: str = "system") -> ContentHash:
         digest = node.content_hash
         target = self.directory / f"{digest.hex}.json"
-        if not target.exists():
-            target.write_text(
-                json.dumps(node.canonical_payload(), sort_keys=True, separators=(",", ":")),
-                encoding="utf-8",
-            )
+        canonical = json.dumps(
+            node.canonical_payload(), sort_keys=True, separators=(",", ":")
+        )
+        if target.exists():
+            if target.read_text(encoding="utf-8") != canonical:
+                raise ValueError(f"provenance hash collision or divergent node: {node.id}")
+        else:
+            target.write_text(canonical, encoding="utf-8")
         self.event_log.append_new(
-            event_id=f"prov_{node.id}",
+            event_id=f"prov_{node.id}_{digest.hex[:16]}",
             event_type="provenance.link",
             actor=actor,
             payload={"node_id": node.id, "node_hash": str(digest), "parent_ids": list(node.parent_ids)},
