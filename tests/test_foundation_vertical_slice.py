@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from core.identity import ContentHash, hash_bytes
+from core.identity import hash_bytes
 from core.montage.flatten import flatten
 from core.montage.model import MediaAsset, new_clip_layer, new_timeline
 from core.montage.operations import split_layer
