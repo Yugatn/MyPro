@@ -1,18 +1,9 @@
 # Migration v0.2 to v0.3
 
-Migration is explicit, versioned and testable.
+Migration is explicit, versioned, deterministic and backup-first.
 
-Planned transformations:
+A migration declares source version, target version, reversibility and lossiness. The registry rejects undeclared transformations and refuses to silently downgrade newer projects.
 
-1. Ontology 0.2.x to 0.3.x.
-2. Project format v1 to v2 with event and snapshot structures.
-3. Observation schema v1 to v2 with explicit analysis status.
-4. Capability model from flat grants to scoped, expiring, revocable grants.
+Before destructive replacement, the caller must create a verified recovery point. Migration output must declare the target schema version.
 
-Each migration is a named function with fixture corpus and semantic checks.
-
-A migration declares source version, target version, reversible, lossy, preconditions and transformation rules.
-
-Projects newer than the supported reader version are not silently downgraded.
-
-**I_migration_reversible** — migrations marked reversible can restore the prior representation without semantic loss.
+The initial registry is intentionally small. Unsupported transformations fail closed until their semantic mapping is implemented and tested.
