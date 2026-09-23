@@ -5,15 +5,18 @@ import json
 from protocol.events import EventEnvelope, EventType
 from protocol.event_log import EventLog
 from protocol.state_machine import ProtocolState, apply
+from runtime.checkpoint import CheckpointStore, ExecutionCheckpoint
 from protocol.validation import validate_event
 
 @dataclass
 class AgentProtocolRuntime:
     log: EventLog
     state: dict[str, ProtocolState]
+    checkpoint_store: CheckpointStore | None = None
 
     @classmethod
-    def create(cls) -> "AgentProtocolRuntime": return cls(EventLog(), {})
+    def create(cls, checkpoint_store: CheckpointStore | None = None) -> "AgentProtocolRuntime":
+        return cls(EventLog(), {}, checkpoint_store)
 
     def ingest(self, event: EventEnvelope) -> ProtocolState:
         validate_event(event)
@@ -25,6 +28,19 @@ class AgentProtocolRuntime:
         self.log.append(event)
         self.state[event.task_id]=next_state
         return next_state
+
+    def save_checkpoint(self, checkpoint: ExecutionCheckpoint) -> None:
+        if self.checkpoint_store is None:
+            raise RuntimeError("checkpoint_store is not configured")
+        self.checkpoint_store.save(checkpoint)
+
+    def resume_checkpoint(self, task_id: str) -> ExecutionCheckpoint | None:
+        if self.checkpoint_store is None:
+            return None
+        checkpoint = self.checkpoint_store.load()
+        if checkpoint is None or checkpoint.task_id != task_id:
+            return None
+        return checkpoint
 
     def make_event(self, *, event_type: EventType, task_id: str, issuer: str,
                    correlation_id: str, payload: dict, evidence_refs=()) -> EventEnvelope:
