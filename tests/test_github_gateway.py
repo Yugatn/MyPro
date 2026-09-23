@@ -18,9 +18,9 @@ class GatewayTests(unittest.TestCase):
             self.assertEqual(config.token, "secret")
             self.assertNotIn("secret", str(config.redacted()))
 
-    def test_main_write_authorization_is_denied(self):
-        with self.assertRaises(AuthorizationError):
-            validate_authorization(self.auth, repository="Yugatn/MyPro", operation="write_branch")
+    def test_authorization_can_target_main_without_authorizing_direct_main_write(self):
+        validate_authorization(self.auth, repository="Yugatn/MyPro", operation="write_branch")
+        self.assertTrue(self.auth.permits("create_pr", repository="Yugatn/MyPro"))
 
     def test_path_scope_is_enforced(self):
         with self.assertRaises(AuthorizationError):
@@ -33,10 +33,8 @@ class GatewayTests(unittest.TestCase):
 
     def test_main_branch_is_rejected(self):
         gateway = FineGrainedPATGateway(FineGrainedPATConfig("Yugatn/MyPro"))
-        auth = GitHubAuthorization("auth_2", "task_2", "Yugatn/MyPro", "mira",
-                                    frozenset({"write_branch"}), ("github/",), "dev")
         with self.assertRaises(GitHubGatewayError):
-            gateway.write_file(authorization=auth, branch="main",
+            gateway.write_file(authorization=self.auth, branch="main",
                                change=GitHubChange("github/x.py", "x"))
 
 if __name__ == "__main__":
