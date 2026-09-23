@@ -5,7 +5,7 @@ from hashlib import sha256
 import json
 from typing import Any
 
-from protocol.event_log import EventLog
+from protocol.event_log import EventConflict, EventLog
 from protocol.events import EventEnvelope, EventType
 from protocol.state_machine import ProtocolState, apply
 from protocol.validation import validate_event
@@ -29,7 +29,7 @@ class AgentProtocolRuntime:
         existing = self.log.get(event.event_id)
         if existing is not None:
             if existing.canonical_json() != event.canonical_json():
-                raise ValueError("event_id already exists with different content")
+                raise EventConflict("event_id already exists with different content")
             return self.state[event.task_id]
 
         current = self.state.get(event.task_id)
