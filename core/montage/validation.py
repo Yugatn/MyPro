@@ -75,10 +75,18 @@ def validate_project_v2(timelines, media_pool) -> None:
             for layer in track.layers:
                 if layer.source_id and layer.source_id not in media_pool:
                     raise InvariantViolation("I_clip_source_exists")
+                if layer.kind.value == "clip" and not layer.source_id:
+                    raise InvariantViolation("I_clip_source_required")
+                if layer.kind.value == "compound" and not layer.nested_timeline_id:
+                    raise InvariantViolation("I_compound_target_required")
                 if layer.nested_timeline_id:
                     if layer.nested_timeline_id not in timelines:
                         raise InvariantViolation("I_compound_target_exists")
                     visit(layer.nested_timeline_id, stack | {tid})
+        for track in tl.audio_tracks:
+            for layer in track.layers:
+                if layer.source_id and layer.source_id not in media_pool:
+                    raise InvariantViolation("I_audio_source_exists")
 
     roots = [tid for tid, timeline in timelines.items() if timeline.parent_timeline_id is None]
     visited = set()
