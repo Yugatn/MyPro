@@ -18,8 +18,6 @@ class GitHubAuthorization:
     def permits(self, operation: str, *, repository: str, path: str | None = None) -> bool:
         if repository != self.repository or operation not in self.allowed_operations:
             return False
-        if operation == "write_branch" and self.target_branch == "main":
-            return False
         if path is not None and self.allowed_paths:
             return any(path == p or path.startswith(p.rstrip("/") + "/") for p in self.allowed_paths)
         return True
