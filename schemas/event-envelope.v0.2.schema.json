@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mypro.local/schemas/event-envelope.v0.2.schema.json",
+  "title": "MyPro Agent Event Envelope v0.2",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["event_id","event_type","task_id","issuer","correlation_id","idempotency_key","payload","evidence_refs","schema_version"],
+  "properties": {
+    "event_id": {"type":"string","minLength":1},
+    "event_type": {"type":"string","enum":["TASK_CREATED","AGENT_ASSIGNED","WORK_STARTED","RESULT_PUBLISHED","EVIDENCE_ATTACHED","VERIFICATION_REQUESTED","VERIFIED","CONFLICT_DETECTED","PROPOSAL_CREATED","DECISION_REQUIRED","ACTION_AUTHORIZED","GITHUB_CHANGE","REVISION_RECORDED","ACTION_REJECTED","TASK_BLOCKED"]},
+    "task_id": {"type":"string","minLength":1},
+    "issuer": {"type":"string","minLength":1},
+    "correlation_id": {"type":"string","minLength":1},
+    "idempotency_key": {"type":"string","minLength":1},
+    "payload": {"type":"object"},
+    "evidence_refs": {"type":"array","items":{"type":"object"}},
+    "schema_version": {"const":"0.2"}
+  }
+}
