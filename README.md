@@ -109,6 +109,12 @@ MyPro использует открытые проекты как совмест
 - fuzzing медиапарсеров;
 - воспроизводимость анализа.
 
+## Agent Protocol Runtime
+
+The current machine-first agent coordination layer is **v0.2**. It provides typed event envelopes, deterministic task state transitions, independent-verification gates, explicit decision and authorization records, idempotent append-only logging, and a strict boundary around GitHub mutation.
+
+The protocol deliberately separates assertion, observation, verification, proposal, authorization and change. Replaying an identical event is a no-op; reusing an event identifier or idempotency key for different content is rejected as a protocol conflict.
+
 ## Roadmap
 
 **Phase 0 — Foundation:** Media Probe, MediaManifest, Project Format, Event Log, Backup/Recovery.
