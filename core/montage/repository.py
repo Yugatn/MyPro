@@ -98,12 +98,18 @@ def _layer_dict(l: VideoLayer) -> dict:
             "range":{"start":l.range.start.to_dict(),"end":l.range.end.to_dict()},
             "source_id":l.source_id,"nested_timeline_id":l.nested_timeline_id}
 
+def _audio_layer_dict(l) -> dict:
+    return {"id": l.id, "name": l.name,
+            "range": {"start": l.range.start.to_dict(), "end": l.range.end.to_dict()},
+            "source_id": l.source_id}
+
 
 def _timeline_dict(t: Timeline) -> dict:
     return {"id":t.id,"name":t.name,"fps_num":t.fps_num,"fps_den":t.fps_den,
             "parent_timeline_id":t.parent_timeline_id,"audio_sample_rate":t.audio_sample_rate,
             "video_tracks":[{"id":x.id,"index":x.index,"name":x.name,"layers":[_layer_dict(l) for l in x.layers]} for x in t.video_tracks],
-            "audio_tracks":[{"id":x.id,"index":x.index,"name":x.name,"layers":[]} for x in t.audio_tracks]}
+            "audio_tracks":[{"id":x.id,"index":x.index,"name":x.name,
+                             "layers":[_audio_layer_dict(l) for l in x.layers]} for x in t.audio_tracks]}
 
 
 def _rt(d):
@@ -120,6 +126,14 @@ def _timeline_from_dict(d):
             range=TimeRange(_rt(x["range"]["start"]),_rt(x["range"]["end"])),
             source_id=x.get("source_id"),nested_timeline_id=x.get("nested_timeline_id")) for x in td["layers"])
         v.append(VideoTrack(td["id"],td["index"],td["name"],layers))
-    a=[AudioTrack(x["id"],x["index"],x["name"],()) for x in d["audio_tracks"]]
+    from .model import AudioLayer
+    a=[]
+    for x in d["audio_tracks"]:
+        layers=tuple(AudioLayer(
+            id=l["id"], name=l["name"],
+            range=TimeRange(_rt(l["range"]["start"]), _rt(l["range"]["end"])),
+            source_id=l.get("source_id"),
+        ) for l in x.get("layers", ()))
+        a.append(AudioTrack(x["id"], x["index"], x["name"], layers))
     return Timeline(d["id"],d["name"],d["fps_num"],d["fps_den"],tuple(v),tuple(a),
                     d.get("parent_timeline_id"),d.get("audio_sample_rate",48000))
