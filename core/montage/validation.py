@@ -96,3 +96,7 @@ def validate_project_v2(timelines, media_pool) -> None:
 
     if not roots and timelines:
         raise InvariantViolation("I_project_has_root_timeline")
+
+    disconnected = set(timelines) - visited
+    for tid in disconnected:
+        visit(tid, set())
