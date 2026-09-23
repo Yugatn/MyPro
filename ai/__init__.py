@@ -1,1 +1,1 @@
-"""AI analysis and montage proposal interfaces."""
+"""MyPro AI orchestration interfaces."""

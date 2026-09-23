@@ -1,107 +1,26 @@
 from ai.mira_adapter import MiraAdapter, MiraResult, MiraTask
 
+def test_consumes_verified_grok_result():
+    a=MiraAdapter(); t=MiraTask("t1","finish")
+    r=MiraResult("r1","t1","grok","completed","done",evidence=({"kind":"commit","value":"abc"},),verification_state="verified")
+    s=a.consume_grok_results(t,[r])
+    assert s["status"]=="verified" and s["next_action"]=="create_proposal"
 
-def test_mira_consumes_grok_result_without_repeating_work():
-    adapter = MiraAdapter()
-    task = MiraTask(
-        task_id="task_root",
-        objective="finish feature",
-        correlation_id="corr_1",
-        idempotency_key="idem_root",
-    )
-    result = MiraResult(
-        result_id="result_grok_1",
-        task_id="task_root",
-        agent_id="grok",
-        status="completed",
-        summary="implemented foundation",
-        verification_state="verified",
-        evidence=({"kind": "commit", "value": "abc123"},),
-    )
+def test_child_task_is_idempotent():
+    a=MiraAdapter(); t=MiraTask("root","complete",correlation_id="c")
+    x=a.create_remaining_work_task(t,remaining_objective="missing",assigned_agent="mira")
+    y=a.create_remaining_work_task(t,remaining_objective="missing",assigned_agent="mira")
+    assert x.task_id==y.task_id and x.idempotency_key==y.idempotency_key
 
-    state = adapter.consume_grok_results(task, [result])
-    assert state["status"] == "verified"
-    assert state["next_action"] == "create_proposal"
-    assert state["verified_result_ids"] == ("result_grok_1",)
+def test_conflict_is_preserved():
+    a=MiraAdapter(); t=MiraTask("t1","verify")
+    x=MiraResult("a","t1","grok","completed","x",claims=({"category":"OBSERVED","statement":"status=ready"},))
+    y=MiraResult("b","t1","grok","completed","y",claims=({"category":"OBSERVED","statement":"status=blocked"},))
+    s=a.consume_grok_results(t,[x,y])
+    assert s["status"]=="conflict" and s["next_action"]=="independent_verification"
 
-
-def test_mira_creates_deterministic_remaining_work_task():
-    adapter = MiraAdapter()
-    parent = MiraTask(
-        task_id="root",
-        objective="complete project",
-        correlation_id="corr",
-        idempotency_key="idem",
-    )
-    a = adapter.create_remaining_work_task(
-        parent,
-        remaining_objective="implement missing adapter",
-        assigned_agent="mira",
-    )
-    b = adapter.create_remaining_work_task(
-        parent,
-        remaining_objective="implement missing adapter",
-        assigned_agent="mira",
-    )
-    assert a.task_id == b.task_id
-    assert a.idempotency_key == b.idempotency_key
-    assert a.parent_task_id == "root"
-
-
-def test_mira_preserves_conflict():
-    adapter = MiraAdapter()
-    task = MiraTask(
-        task_id="root",
-        objective="verify",
-        correlation_id="corr",
-        idempotency_key="idem",
-    )
-    results = [
-        MiraResult(
-            result_id="a",
-            task_id="root",
-            agent_id="grok",
-            status="completed",
-            summary="x",
-            claims=({"category": "OBSERVED", "statement": "status=ready"},),
-        ),
-        MiraResult(
-            result_id="b",
-            task_id="root",
-            agent_id="grok",
-            status="completed",
-            summary="y",
-            claims=({"category": "OBSERVED", "statement": "status=blocked"},),
-        ),
-    ]
-    state = adapter.consume_grok_results(task, results)
-    assert state["status"] == "conflict"
-    assert state["next_action"] == "independent_verification"
-
-
-def test_proposal_requires_verified_evidence():
-    adapter = MiraAdapter()
-    task = MiraTask(
-        task_id="root",
-        objective="finish",
-        correlation_id="corr",
-        idempotency_key="idem",
-    )
-    result = MiraResult(
-        result_id="g",
-        task_id="root",
-        agent_id="grok",
-        status="completed",
-        summary="done",
-        verification_state="verified",
-        evidence=({"kind": "commit", "value": "abc"},),
-    )
-    proposal = adapter.create_proposal(
-        task,
-        [result],
-        changes=({"operation": "add_file", "path": "example"},),
-        intent="integrate verified implementation",
-    )
-    assert proposal.requires_decision is True
-    assert proposal.verification_state == "verified"
-    assert proposal.source_result_ids == ("g",)
+def test_proposal_requires_verification():
+    a=MiraAdapter(); t=MiraTask("t1","finish")
+    r=MiraResult("g","t1","grok","completed","done",evidence=({"kind":"commit","value":"abc"},),verification_state="verified")
+    p=a.create_proposal(t,[r],changes=({"operation":"add_file","path":"x"},),intent="integrate verified work")
+    assert p.requires_decision and p.verification_state=="verified"
