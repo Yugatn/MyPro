@@ -26,7 +26,10 @@ class AgentProtocolRuntime:
     def ingest(self, event: EventEnvelope) -> ProtocolState:
         validate_event(event)
 
-        if self.log.contains(event.event_id):
+        existing = self.log.get(event.event_id)
+        if existing is not None:
+            if existing.canonical_json() != event.canonical_json():
+                raise ValueError("event_id already exists with different content")
             return self.state[event.task_id]
 
         current = self.state.get(event.task_id)
@@ -37,6 +40,8 @@ class AgentProtocolRuntime:
         else:
             next_state = apply(current, event)
 
+        # Append first: if an idempotency conflict is detected, in-memory state
+        # remains unchanged.
         self.log.append(event)
         self.state[event.task_id] = next_state
 
