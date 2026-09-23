@@ -32,6 +32,9 @@ class EventLog:
         self._by_key[event.idempotency_key] = event
         return True
 
+    def get(self, event_id: str) -> EventEnvelope | None:
+        return self._by_id.get(event_id)
+
     def all(self) -> tuple[EventEnvelope, ...]:
         return tuple(self._events)
 
