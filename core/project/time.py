@@ -1,18 +1,11 @@
-"""Exact project time primitives.
-
-Canonical time is rational. Float seconds are an interchange convenience only.
-"""
-
+"""Exact rational project time."""
 from __future__ import annotations
-
 from dataclasses import dataclass
 from fractions import Fraction
 
 
 @dataclass(frozen=True, order=True)
 class RationalTime:
-    """An exact time value represented as numerator/denominator."""
-
     numerator: int
     denominator: int = 1
 
@@ -24,17 +17,27 @@ class RationalTime:
     def fraction(self) -> Fraction:
         return Fraction(self.numerator, self.denominator)
 
-    def to_seconds(self) -> float:
-        return float(self.fraction)
+    def to_seconds(self) -> Fraction:
+        return self.fraction
 
     def to_dict(self) -> dict[str, int]:
-        return {"num": self.numerator, "den": self.denominator}
+        f = self.fraction
+        return {"num": f.numerator, "den": f.denominator}
+
+    @classmethod
+    def from_seconds(cls, value: Fraction | int) -> "RationalTime":
+        f = Fraction(value)
+        return cls(f.numerator, f.denominator)
+
+    def __add__(self, other: "RationalTime") -> "RationalTime":
+        return self.from_seconds(self.fraction + other.fraction)
+
+    def __sub__(self, other: "RationalTime") -> "RationalTime":
+        return self.from_seconds(self.fraction - other.fraction)
 
 
 @dataclass(frozen=True)
 class TimeRange:
-    """Half-open interval [start, end)."""
-
     start: RationalTime
     end: RationalTime
 
@@ -43,8 +46,8 @@ class TimeRange:
             raise ValueError("end must be greater than start")
 
     @property
-    def duration(self) -> Fraction:
-        return self.end.fraction - self.start.fraction
+    def duration(self) -> RationalTime:
+        return RationalTime.from_seconds(self.end.fraction - self.start.fraction)
 
     def contains(self, value: RationalTime) -> bool:
         return self.start.fraction <= value.fraction < self.end.fraction

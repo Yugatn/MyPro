@@ -1,38 +1,48 @@
-# MyPro
+# MyPro — Evidence Core for verifiable digital content
 
-**MyPro** — открытая модульная платформа для анализа, создания, монтажа, преобразования и проверки цифрового контента.
+MyPro is an open modular platform for analysis, creation, montage, transformation and verification of digital content.
 
-Главное архитектурное ядро MyPro — не UI и не конкретный видеоредактор. Это **event-sourced, content-addressed среда для проверяемого происхождения контента и решений над ним**.
+The core is an event-sourced, content-addressed model. Media, observations, montage state, proposals and decisions are designed to remain inspectable and reproducible.
 
-Монтаж, AI, безопасность и аудит рассматриваются как приложения одного Evidence Core.
+## Foundation v0.4
 
-## Основной принцип
+The runnable vertical slice now includes:
 
-Контент сначала представляется как проверяемая совокупность данных, наблюдений и происхождения. Затем он может быть интерпретирован алгоритмами, AI или человеком.
+- algorithm-aware content hashes with BLAKE3 and SHA-256;
+- exact rational time and half-open ranges;
+- hash-chained append-only event log with incomplete-tail recovery;
+- atomic content-addressed snapshots;
+- project creation, backup, verification and restore;
+- layered multi-track Montage Model primitives;
+- split, trim, move and compound operations;
+- compound flattening for renderer-facing consumers;
+- montage invariant validation;
+- Universal Import Layer with an OTIO adapter;
+- import loss, mapping and source provenance reporting;
+- CLI and end-to-end demo;
+- automated foundation tests.
 
-Граница решений:
+## Quick start
 
-**AI или анализатор предлагает. Core проверяет. Человек или политика принимает решение. Action применяет изменение. Project фиксирует результат.**
+```bash
+pip install -e ".[dev]"
+python demo.py /tmp/mypro-demo
+pytest -q
+```
 
-Наблюдение не является выводом. Вывод не является приговором. Предложение не является изменением.
+CLI:
 
-## Foundation v0.2
+```bash
+mypro init /tmp/project.mypro
+mypro backup /tmp/project.mypro --label morning
+mypro verify /tmp/project.mypro
+mypro restore /tmp/project.mypro <digest> /tmp/restored.mypro
+mypro import-project timeline.otio /tmp/project.mypro
+```
 
-В репозитории уже заложены:
+Import is proposal-oriented. The default import command performs a dry run and does not mutate montage state.
 
-- формальная онтология Asset, Observation, Interpretation, Finding, Hypothesis, Proposal, Decision, Action, Revision, Invariant и Policy;
-- schema-first описание проекта, наблюдений, предложений и capabilities;
-- рациональная временная модель с полуоткрытыми интервалами;
-- append-only JSONL event log;
-- базовая versioned Observation model;
-- provenance и content-addressed архитектурные принципы;
-- каталог архитектурных инвариантов;
-- границы plugin sandbox и capability security;
-- документация по interoperability, threat model и privacy.
-
-Следующий практический слой — Media Probe, MediaManifest, атомарное сохранение проекта и проверяемое резервное копирование.
-
-## Архитектура
+## Architecture
 
 ```text
 MyPro
@@ -47,84 +57,28 @@ MyPro
 └── Integrations
 ```
 
-### Media
+OpenTimelineIO is treated as interchange. The canonical MyPro model remains independent of any one editor or interchange format.
 
-Работает с исходными файлами, идентичностью, техническими метаданными, хэшами и proxy.
+## Core invariants
 
-### Analysis
+- event records form a verifiable hash chain;
+- incomplete final event writes can be recovered without rewriting valid history;
+- snapshots are installed through temporary files and atomic replacement;
+- canonical time does not use floating-point seconds;
+- montage layers on one track cannot overlap;
+- compound timeline references cannot form cycles;
+- clip source references must resolve;
+- imports report loss and mapping explicitly;
+- import adapters produce evidence/proposals rather than directly changing project state.
 
-Производит версионируемые Observation с confidence, uncertainty, status и provenance.
+## Design boundary
 
-Анализ строится как DAG вычислений, чтобы поддерживать кэширование, инкрементальный пересчёт и обнаружение устаревших результатов.
+AI and analyzers produce proposals. Core validation and policy are separate from execution. A proposal is not an action, and an observation is not a conclusion.
 
-### Evidence
+## Next implementation layer
 
-Связывает исходный Asset, Observation, Interpretation, Finding, Proposal, Decision и Action с их происхождением.
+The next production-facing slice is FFmpeg render verification, followed by a minimal Editorial Model, Intent Model and MCP authorization boundary.
 
-### Project
+## License
 
-Проект хранит не только текущее состояние, но и историю изменений. Event log является append-only журналом, snapshots ускоряют восстановление.
-
-### Montage
-
-Каноническая монтажная модель остаётся независимой от UI и конкретного renderer. OpenTimelineIO используется как interchange, а не как скрытый источник истины.
-
-### AI
-
-AI создаёт Proposal. Изменение проекта возможно только через явный policy-controlled путь с фиксацией Decision, Action и Revision.
-
-### Security
-
-Плагины работают по принципу deny by default. Capability описывает техническую возможность, но сама по себе не означает разрешение на конкретное действие.
-
-## Структура
-
-- `spec/` — формальные спецификации;
-- `schemas/` — JSON Schema;
-- `core/` — доменное ядро;
-- `runtime/` — границы исполнения расширений;
-- `ai/` — AI proposals и orchestration;
-- `integrations/` — FFmpeg, OTIO, C2PA, MLT и другие внешние системы;
-- `apps/` — будущие приложения RosEdit;
-- `tests/`, `benchmarks/`, `fuzz/` — проверка и измерения;
-- `docs/` — архитектурные документы.
-
-## Open-source synthesis
-
-MyPro использует открытые проекты как совместимые зависимости, интеграционные границы и источники архитектурных идей. Код с несовместимыми лицензиями не копируется в MIT-ядро.
-
-Ключевые направления: FFmpeg/FFprobe, OpenTimelineIO, MLT, C2PA и W3C PROV. Практические NLE-проекты могут использоваться как workflow reference без превращения MyPro в скрытый fork.
-
-## Безопасность и обратимость
-
-Проектная модель предусматривает:
-
-- atomic writes;
-- schema migrations;
-- snapshots;
-- проверяемые backups;
-- внешние ссылки с прозрачным состоянием;
-- provenance;
-- capability audit;
-- fuzzing медиапарсеров;
-- воспроизводимость анализа.
-
-## Roadmap
-
-**Phase 0 — Foundation:** Media Probe, MediaManifest, Project Format, Event Log, Backup/Recovery.
-
-**Phase 1 — Evidence:** Analysis DAG, Observation Schema, Provenance, Plugin SDK, Capability Security.
-
-**Phase 2 — Montage:** Montage Model, OTIO interchange, базовый редактор.
-
-**Phase 3 — AI:** Proposal Engine, Policy Engine, Human-in-the-loop, RosEdit.
-
-**Phase 4 — Ecosystem:** Security Analyzer, EthicalAudit, РосЭкшн, RosAction и расширения.
-
-## Статус
-
-Проект находится на стадии архитектурного основания. Коммерческие параметры, характеристики будущего оборудования, производительность и сроки являются проектными гипотезами, пока не подтверждены прототипами и испытаниями.
-
-## Лицензия
-
-MIT. См. LICENSE.
+MIT.
