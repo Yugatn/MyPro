@@ -19,3 +19,22 @@ def test_checkpoint_write_is_atomic_from_reader_perspective(tmp_path):
 def test_bounded_policy_skips_completed_calls():
     policy = BoundedExecutionPolicy(max_calls_per_tranche=3)
     assert policy.select_next(completed_calls={"pr_metadata", "ci_status"}, candidates=["pr_metadata", "ci_status", "failed_job"]) == "failed_job"
+
+
+
+def test_runtime_can_resume_checkpoint(tmp_path):
+    from runtime.orchestrator import AgentProtocolRuntime
+
+    store = CheckpointStore(tmp_path / "checkpoint.json")
+    runtime = AgentProtocolRuntime.create(checkpoint_store=store)
+    checkpoint = ExecutionCheckpoint(
+        task_id="t1",
+        phase="VERIFY",
+        last_completed_step="ci_status_checked",
+        next_step="inspect_failed_job",
+        completed_calls=("pr_metadata", "ci_status"),
+    )
+    runtime.save_checkpoint(checkpoint)
+    resumed = runtime.resume_checkpoint("t1")
+    assert resumed == checkpoint
+    assert runtime.resume_checkpoint("other") is None
