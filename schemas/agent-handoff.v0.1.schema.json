@@ -1,0 +1,45 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mypro.local/schemas/agent-handoff.v0.1.schema.json",
+  "title": "MyPro Agent Handoff v0.1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "schema_version",
+    "issuer",
+    "assigned_agent",
+    "objective",
+    "verification_requirement",
+    "idempotency_key"
+  ],
+  "properties": {
+    "task_id": {"type": "string", "minLength": 1},
+    "schema_version": {"const": "0.1"},
+    "issuer": {"type": "string", "minLength": 1},
+    "assigned_agent": {"type": "string", "minLength": 1},
+    "objective": {"type": "string", "minLength": 1},
+    "constraints": {"type": "object"},
+    "required_capabilities": {"type": "array", "items": {"type": "string"}},
+    "input_references": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "value"],
+        "properties": {
+          "kind": {"type": "string"},
+          "value": {"type": "string"},
+          "content_hash": {"type": ["string", "null"]}
+        }
+      }
+    },
+    "expected_output_type": {"type": "string"},
+    "verification_requirement": {
+      "enum": ["none", "self", "independent", "dual"]
+    },
+    "idempotency_key": {"type": "string", "minLength": 1},
+    "parent_task_id": {"type": ["string", "null"]},
+    "correlation_id": {"type": "string", "minLength": 1}
+  }
+}
