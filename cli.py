@@ -20,7 +20,11 @@ def probe_cmd(path: Path):
     """Placeholder until FFprobe integration is installed."""
     if not path.exists():
         raise typer.BadParameter(f"file does not exist: {path}")
-        typer.echo(json.dumps({"path":str(path),"size":path.stat().st_size},ensure_ascii=False,indent=2))
+    typer.echo(json.dumps(
+        {"path": str(path), "size": path.stat().st_size},
+        ensure_ascii=False,
+        indent=2,
+    ))
 
 
 @app.command("import-project")
