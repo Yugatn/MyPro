@@ -9,7 +9,7 @@ from .model import Timeline, VideoLayer, AudioLayer, LayerKind
 class FlatLayer:
     path: tuple[str,...]
     track_index: int
-    layer: VideoLayer
+    layer: VideoLayer | AudioLayer
     effective_range: TimeRange
 
 
@@ -49,7 +49,6 @@ def flatten(timelines: dict[str,Timeline], timeline_id: str) -> FlatTimeline:
                 else:
                     out.append(FlatLayer(path+(tid,),track.index,layer,TimeRange(start,end)))
         visiting.remove(tid)
-    walk(timeline_id)
     walk(timeline_id)
     duration = max(
         (item.effective_range.end for item in (*out, *audio_out)),
