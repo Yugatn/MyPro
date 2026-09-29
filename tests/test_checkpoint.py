@@ -38,3 +38,23 @@ def test_runtime_can_resume_checkpoint(tmp_path):
     resumed = runtime.resume_checkpoint("t1")
     assert resumed == checkpoint
     assert runtime.resume_checkpoint("other") is None
+
+
+
+def test_bounded_policy_selects_at_most_configured_batch():
+    policy = BoundedExecutionPolicy(max_calls_per_tranche=2)
+    assert policy.select_batch(
+        completed_calls=set(), candidates=["a", "b", "c"]
+    ) == ("a", "b")
+
+
+def test_bounded_policy_refuses_execution_after_limit():
+    policy = BoundedExecutionPolicy(max_calls_per_tranche=2)
+    assert policy.can_execute(calls_in_tranche=1)
+    assert not policy.can_execute(calls_in_tranche=2)
+    try:
+        policy.require_capacity(calls_in_tranche=2)
+    except RuntimeError as exc:
+        assert "exhausted" in str(exc)
+    else:
+        raise AssertionError("expected bounded tranche exhaustion")
