@@ -75,7 +75,16 @@ class BoundedExecutionPolicy:
         self.max_calls_per_tranche = max_calls_per_tranche
 
     def select_next(self, *, completed_calls: set[str], candidates: list[str]) -> str | None:
-        for candidate in candidates:
-            if candidate not in completed_calls:
-                return candidate
-        return None
+        remaining = [c for c in candidates if c not in completed_calls]
+        return remaining[0] if remaining else None
+
+    def select_batch(self, *, completed_calls: set[str], candidates: list[str]) -> tuple[str, ...]:
+        remaining = [c for c in candidates if c not in completed_calls]
+        return tuple(remaining[: self.max_calls_per_tranche])
+
+    def can_execute(self, *, calls_in_tranche: int) -> bool:
+        return 0 <= calls_in_tranche < self.max_calls_per_tranche
+
+    def require_capacity(self, *, calls_in_tranche: int) -> None:
+        if not self.can_execute(calls_in_tranche=calls_in_tranche):
+            raise RuntimeError("bounded execution tranche exhausted")
