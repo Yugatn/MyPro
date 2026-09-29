@@ -36,3 +36,7 @@ CI: PASS | FAIL | RUNNING
 PHASE: DIAGNOSE | FIX | VERIFY | REPORT
 NEXT_ACTION: one concrete action
 CHECKPOINT: task checkpoint identifier
+
+## Enforced tranche limit
+
+The runtime policy exposes `select_batch`, `can_execute`, and `require_capacity`. A caller cannot legally continue a tranche after the configured maximum without starting a new tranche and recording a checkpoint.
