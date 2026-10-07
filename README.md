@@ -127,6 +127,10 @@ The protocol deliberately separates assertion, observation, verification, propos
 
 **Phase 4 — Ecosystem:** Security Analyzer, EthicalAudit, РосЭкшн, RosAction и расширения.
 
+## «Мира» — Epistemic Governance System
+
+В `docs/mira/` и `spec/mira-eel-v0.4.md` зафиксирована формальная ветвь исследований «Миры»: CGPF/UACL/RSL/MCL, MOSL/RIC, EAL, HFTP, ISCL, RIP и EEL. Текущая версия переводит архитектуру в измеримое пространство состояний `(Ω, FΩ, K)` и явно отделяет доказанные свойства от гипотез и непроверенных утверждений.
+
 ## Статус
 
 Проект находится на стадии архитектурного основания. Коммерческие параметры, характеристики будущего оборудования, производительность и сроки являются проектными гипотезами, пока не подтверждены прототипами и испытаниями.
