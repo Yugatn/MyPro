@@ -154,3 +154,8 @@ Psychometric fitting prototype: [fit implementation](core/analysis/psychometric_
 
 
 Synthetic validation scaffold: [scripts/validate_psychometric_synthetic.py](scripts/validate_psychometric_synthetic.py). Run `python -m scripts.validate_psychometric_synthetic` from the repository root. This is a generated-data smoke check only, not validation on real viewers.
+
+
+## Multimodal psychophysiology experiment preparation
+
+Planning protocol: [multimodal psychophysiology experiment protocol v0.1](spec/multimodal_psychophysiology_experiment_protocol.md). It defines candidate sensor channels, event synchronization, calibration and artifact handling, study readiness gates, privacy/consent requirements, and proposed MyPro data entities. It is a planning specification only; no device validation, ethics approval, recruitment or data collection is claimed.
