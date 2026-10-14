@@ -138,3 +138,8 @@ The protocol deliberately separates assertion, observation, verification, propos
 ## Лицензия
 
 MIT. См. LICENSE.
+
+
+## Media Perception Observation Profile (MPOP) v0.1
+
+[Спецификация MPOP](spec/media_perception_observation_profile.md) описывает proposed schema profile для измерения длительности видимости объектов и отдельной фиксации результатов задач восприятия и памяти. Профиль использует существующие rational Time Model, versioned Observation, provenance и Analysis DAG. Это спецификация для реализации, а не утверждение о готовом или валидированном анализаторе. Экспозиция объекта не считается доказательством обнаружения, запоминания или причинного медиаэффекта.
