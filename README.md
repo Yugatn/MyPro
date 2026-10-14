@@ -148,3 +148,6 @@ MIT. См. LICENSE.
 ## Media Perception Observation Profile — initial implementation
 
 The first typed records and unit tests are now available: [implementation status](spec/media_perception_implementation_status.md), [typed data model](core/analysis/media_perception.py), and [tests](tests/test_media_perception.py). This is an implementation scaffold only; no media decoder, psychometric fitting, or validated human-perception threshold is claimed.
+
+
+Psychometric fitting prototype: [fit implementation](core/analysis/psychometric_fit.py), [tests](tests/test_psychometric_fit.py), [fitting protocol](spec/psychometric_fitting_protocol.md). The current fitter estimates a logistic curve's midpoint and slope from aggregate binomial counts with fixed guess/lapse rates. It is not validated for real participant data, does not estimate uncertainty, and does not model participant-level effects.
