@@ -14,3 +14,8 @@ Tests are authored in `tests/test_psychometric.py`. They still require execution
 ## v0.2 — parameter-fitting prototype
 
 `core/analysis/psychometric_fit.py` adds binomial negative log-likelihood fitting for the midpoint and positive slope using deterministic coordinate search. Guess and lapse rates are fixed inputs. The routine rejects constant response-rate patterns and requires at least three distinct exposure durations. It returns a point estimate and convergence diagnostics only; it does **not** calculate confidence intervals or account for participant-level random effects. Tests are in `tests/test_psychometric_fit.py` and have been authored but not run in this environment.
+
+
+## Synthetic smoke check
+
+`scripts/validate_psychometric_synthetic.py` defines a deterministic synthetic-data smoke check with known curve parameters. Run it from the repository root using `python -m scripts.validate_psychometric_synthetic`. It checks only basic recovery on generated data and is not evidence of validity for human perception. The script has been authored but not executed in the repository environment.
