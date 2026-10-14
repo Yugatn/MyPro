@@ -139,28 +139,24 @@ The protocol deliberately separates assertion, observation, verification, propos
 
 MIT. См. LICENSE.
 
-
 ## Media Perception Observation Profile (MPOP) v0.1
 
 [Спецификация MPOP](spec/media_perception_observation_profile.md) описывает proposed schema profile для измерения длительности видимости объектов и отдельной фиксации результатов задач восприятия и памяти. Профиль использует существующие rational Time Model, versioned Observation, provenance и Analysis DAG. Это спецификация для реализации, а не утверждение о готовом или валидированном анализаторе. Экспозиция объекта не считается доказательством обнаружения, запоминания или причинного медиаэффекта.
-
 
 ## Media Perception Observation Profile — initial implementation
 
 The first typed records and unit tests are now available: [implementation status](spec/media_perception_implementation_status.md), [typed data model](core/analysis/media_perception.py), and [tests](tests/test_media_perception.py). This is an implementation scaffold only; no media decoder, psychometric fitting, or validated human-perception threshold is claimed.
 
-
 Psychometric fitting prototype: [fit implementation](core/analysis/psychometric_fit.py), [tests](tests/test_psychometric_fit.py), [fitting protocol](spec/psychometric_fitting_protocol.md). The current fitter estimates a logistic curve's midpoint and slope from aggregate binomial counts with fixed guess/lapse rates. It is not validated for real participant data, does not estimate uncertainty, and does not model participant-level effects.
 
-
 Synthetic validation scaffold: [scripts/validate_psychometric_synthetic.py](scripts/validate_psychometric_synthetic.py). Run `python -m scripts.validate_psychometric_synthetic` from the repository root. This is a generated-data smoke check only, not validation on real viewers.
-
 
 ## Multimodal psychophysiology experiment preparation
 
 Planning protocol: [multimodal psychophysiology experiment protocol v0.1](spec/multimodal_psychophysiology_experiment_protocol.md). It defines candidate sensor channels, event synchronization, calibration and artifact handling, study readiness gates, privacy/consent requirements, and proposed MyPro data entities. It is a planning specification only; no device validation, ethics approval, recruitment or data collection is claimed.
 
-
 ## Экспериментальная аппаратура MyPro × «Синема Катарсис»
 
 [Базовый реестр оборудования и план реализации при нулевом бюджете](spec/experimental_equipment_inventory.md) фиксирует кандидатов (Tobii Pro Fusion / Pupil Labs Neon, Polar H10, синхронизация LSL и условный будущий EEG), ориентировочный бюджет, ограничения, план проверки и условия университетского сотрудничества. Это план, а не заказ или подтверждение характеристик; текущий доступный бюджет указан как €0.
+
+[Пакет для университетского сотрудничества](docs/university_collaboration_proposal.md) описывает цель технического пилота, вклад сторон, требования к лаборатории, этапы проверки синхронизации и этические ограничения. Предложение рассчитано на старт без закупки оборудования автором.
