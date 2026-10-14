@@ -4,7 +4,7 @@ from core.analysis.psychometric import LogisticPsychometricModel, empirical_accu
 
 def test_logistic_midpoint_is_between_asymptotes():
     model = LogisticPsychometricModel(0.2, 20.0, guess_rate=0.25, lapse_rate=0.02)
-    assert model.probability(0.2) == pytest.approx(0.74)
+    assert model.probability(0.2) == pytest.approx(0.615)
 
 def test_logistic_inverse_round_trips_probability():
     model = LogisticPsychometricModel(0.15, 12.0, guess_rate=0.0, lapse_rate=0.01)
