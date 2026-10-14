@@ -143,3 +143,8 @@ MIT. См. LICENSE.
 ## Media Perception Observation Profile (MPOP) v0.1
 
 [Спецификация MPOP](spec/media_perception_observation_profile.md) описывает proposed schema profile для измерения длительности видимости объектов и отдельной фиксации результатов задач восприятия и памяти. Профиль использует существующие rational Time Model, versioned Observation, provenance и Analysis DAG. Это спецификация для реализации, а не утверждение о готовом или валидированном анализаторе. Экспозиция объекта не считается доказательством обнаружения, запоминания или причинного медиаэффекта.
+
+
+## Media Perception Observation Profile — initial implementation
+
+The first typed records and unit tests are now available: [implementation status](spec/media_perception_implementation_status.md), [typed data model](core/analysis/media_perception.py), and [tests](tests/test_media_perception.py). This is an implementation scaffold only; no media decoder, psychometric fitting, or validated human-perception threshold is claimed.
