@@ -159,3 +159,8 @@ Synthetic validation scaffold: [scripts/validate_psychometric_synthetic.py](scri
 ## Multimodal psychophysiology experiment preparation
 
 Planning protocol: [multimodal psychophysiology experiment protocol v0.1](spec/multimodal_psychophysiology_experiment_protocol.md). It defines candidate sensor channels, event synchronization, calibration and artifact handling, study readiness gates, privacy/consent requirements, and proposed MyPro data entities. It is a planning specification only; no device validation, ethics approval, recruitment or data collection is claimed.
+
+
+## Экспериментальная аппаратура MyPro × «Синема Катарсис»
+
+[Базовый реестр оборудования и план реализации при нулевом бюджете](spec/experimental_equipment_inventory.md) фиксирует кандидатов (Tobii Pro Fusion / Pupil Labs Neon, Polar H10, синхронизация LSL и условный будущий EEG), ориентировочный бюджет, ограничения, план проверки и условия университетского сотрудничества. Это план, а не заказ или подтверждение характеристик; текущий доступный бюджет указан как €0.
