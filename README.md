@@ -151,3 +151,6 @@ The first typed records and unit tests are now available: [implementation status
 
 
 Psychometric fitting prototype: [fit implementation](core/analysis/psychometric_fit.py), [tests](tests/test_psychometric_fit.py), [fitting protocol](spec/psychometric_fitting_protocol.md). The current fitter estimates a logistic curve's midpoint and slope from aggregate binomial counts with fixed guess/lapse rates. It is not validated for real participant data, does not estimate uncertainty, and does not model participant-level effects.
+
+
+Synthetic validation scaffold: [scripts/validate_psychometric_synthetic.py](scripts/validate_psychometric_synthetic.py). Run `python -m scripts.validate_psychometric_synthetic` from the repository root. This is a generated-data smoke check only, not validation on real viewers.
