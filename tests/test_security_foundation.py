@@ -9,7 +9,7 @@ NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
 
 
 def capability(status=CapabilityStatus.ACTIVE, expires_at=None):
-    return Capability("cap_1", "agent:grok", "MODIFY_REPOSITORY", "repo:Yugatn/MyPro", NOW, expires_at, status)
+    return Capability("cap_1", "agent:grok", "MODIFY_REPOSITORY", "repo:Yugatn/MyPro", NOW - timedelta(days=7), expires_at, status)
 
 
 def test_identity_does_not_imply_authority():
@@ -54,7 +54,7 @@ def test_capability_not_valid_before_issue_time():
     decision = PolicyEngine().evaluate(
         PolicyRequest(
             "agent:grok", "MODIFY_REPOSITORY", "repo:Yugatn/MyPro",
-            capability=capability(), now=NOW - timedelta(seconds=1),
+            capability=capability(), now=NOW - timedelta(days=8),
         )
     )
     assert decision.kind is PolicyDecisionKind.DENY
@@ -83,7 +83,7 @@ def test_naive_timestamps_rejected():
 
 def test_invalid_expiry_order_rejected():
     with pytest.raises(ValueError, match="follow issued_at"):
-        capability(expires_at=NOW)
+        capability(expires_at=NOW - timedelta(days=7))
 
 
 @pytest.mark.parametrize("state", [EvidenceState.CLAIMED, EvidenceState.OBSERVED,
