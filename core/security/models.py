@@ -66,10 +66,25 @@ class Capability:
     status: CapabilityStatus = CapabilityStatus.ACTIVE
     parent_id: str | None = None
 
+    def __post_init__(self) -> None:
+        if not self.capability_id or not self.subject_id or not self.operation or not self.resource:
+            raise ValueError("capability identity, operation and resource are required")
+        if self.issued_at.tzinfo is None or self.issued_at.utcoffset() is None:
+            raise ValueError("issued_at must be timezone-aware")
+        if self.expires_at is not None:
+            if self.expires_at.tzinfo is None or self.expires_at.utcoffset() is None:
+                raise ValueError("expires_at must be timezone-aware")
+            if self.expires_at <= self.issued_at:
+                raise ValueError("expires_at must follow issued_at")
+
     def is_active(self, now: datetime | None = None) -> bool:
         now = now or utc_now()
-        return self.status is CapabilityStatus.ACTIVE and (
-            self.expires_at is None or now < self.expires_at
+        if now.tzinfo is None or now.utcoffset() is None:
+            raise ValueError("now must be timezone-aware")
+        return (
+            self.status is CapabilityStatus.ACTIVE
+            and self.issued_at <= now
+            and (self.expires_at is None or now < self.expires_at)
         )
 
     def permits(self, subject_id: str, operation: str, resource: str, now: datetime | None = None) -> bool:
