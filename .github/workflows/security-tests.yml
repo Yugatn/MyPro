@@ -1,0 +1,30 @@
+name: MyPro security and protocol tests
+on:
+  push:
+    paths:
+      - 'core/security/**'
+      - 'protocol/**'
+      - 'runtime/**'
+      - 'tests/**'
+      - '.github/workflows/security-tests.yml'
+  pull_request:
+    paths:
+      - 'core/security/**'
+      - 'protocol/**'
+      - 'runtime/**'
+      - 'tests/**'
+      - '.github/workflows/security-tests.yml'
+permissions:
+  contents: read
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install pytest
+        run: python -m pip install "pytest>=8,<10"
+      - name: Test authorization and event protocol
+        run: python -m pytest tests/test_security_foundation.py tests/test_protocol_runtime.py -q
