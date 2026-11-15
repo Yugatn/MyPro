@@ -59,7 +59,7 @@ def validate_event(event: EventEnvelope) -> None:
 
     elif event.event_type is EventType.GITHUB_CHANGE:
         _required(payload, "authorization_id", "change_id", "repository", "changes")
-        if not isinstance(payload["changes"], list) or not payload["changes"]:
+        if not isinstance(payload["changes"], (list, tuple)) or not payload["changes"]:
             raise ProtocolViolation("GITHUB_CHANGE requires a non-empty changes list")
 
     elif event.event_type is EventType.REVISION_RECORDED:
