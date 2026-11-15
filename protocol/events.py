@@ -3,7 +3,30 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from enum import Enum
 import json
+from types import MappingProxyType
 from typing import Any, Mapping
+
+
+def _freeze_json(value: Any) -> Any:
+    """Snapshot JSON-like values and recursively prevent subsequent mutation."""
+    if isinstance(value, Mapping):
+        if any(not isinstance(key, str) for key in value):
+            raise TypeError("event payload keys must be strings")
+        return MappingProxyType({key: _freeze_json(item) for key, item in value.items()})
+    if isinstance(value, (list, tuple)):
+        return tuple(_freeze_json(item) for item in value)
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    raise TypeError(f"unsupported event payload type: {type(value).__name__}")
+
+
+def _thaw_json(value: Any) -> Any:
+    """Create JSON-compatible copies without exposing the internal snapshot."""
+    if isinstance(value, Mapping):
+        return {key: _thaw_json(item) for key, item in value.items()}
+    if isinstance(value, tuple):
+        return [_thaw_json(item) for item in value]
+    return value
 
 
 class EventType(str, Enum):
@@ -36,6 +59,14 @@ class EventEnvelope:
     evidence_refs: tuple[Mapping[str, Any], ...] = ()
     schema_version: str = "0.2"
 
+    def __post_init__(self) -> None:
+        # A frozen dataclass does not freeze nested dictionaries/lists.
+        # Snapshot at construction so caller-owned payloads cannot rewrite history.
+        object.__setattr__(self, "payload", _freeze_json(self.payload))
+        object.__setattr__(
+            self, "evidence_refs", tuple(_freeze_json(item) for item in self.evidence_refs)
+        )
+
     def as_dict(self) -> dict[str, Any]:
         return {
             "event_id": self.event_id,
@@ -44,8 +75,8 @@ class EventEnvelope:
             "issuer": self.issuer,
             "correlation_id": self.correlation_id,
             "idempotency_key": self.idempotency_key,
-            "payload": dict(self.payload),
-            "evidence_refs": [dict(x) for x in self.evidence_refs],
+            "payload": _thaw_json(self.payload),
+            "evidence_refs": [_thaw_json(x) for x in self.evidence_refs],
             "schema_version": self.schema_version,
         }
 
