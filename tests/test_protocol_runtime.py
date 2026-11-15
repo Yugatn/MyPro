@@ -112,3 +112,48 @@ def test_github_change_requires_explicit_authorization_data():
     )
     with pytest.raises(ProtocolViolation):
         runtime.ingest(event)
+
+
+def test_event_payload_is_a_deep_immutable_snapshot():
+    runtime = AgentProtocolRuntime.create()
+    original = {"task_kind": "repo_change", "context": {"paths": ["README.md"]}}
+    event = runtime.make_event(
+        event_type=EventType.TASK_CREATED,
+        task_id="immutable",
+        issuer="mira",
+        correlation_id="c",
+        payload=original,
+    )
+    digest_before = event.canonical_json()
+    original["context"]["paths"].append("tampered.py")
+
+    assert event.payload["context"]["paths"] == ("README.md",)
+    assert event.canonical_json() == digest_before
+    with pytest.raises(TypeError):
+        event.payload["context"]["other"] = "tamper"
+
+    copy = event.as_dict()
+    copy["payload"]["context"]["paths"].append("tampered-again.py")
+    assert event.canonical_json() == digest_before
+    assert runtime.ingest(event) is ProtocolState.NEW
+
+
+def test_github_change_accepts_frozen_nested_changes():
+    runtime = AgentProtocolRuntime.create()
+    runtime.state["t"] = ProtocolState.ACTION_READY
+    changes = [{"path": "README.md", "action": "update"}]
+    event = runtime.make_event(
+        event_type=EventType.GITHUB_CHANGE,
+        task_id="t",
+        issuer="mira",
+        correlation_id="c",
+        payload={
+            "authorization_id": "authorization-1",
+            "change_id": "change-1",
+            "repository": "Yugatn/MyPro",
+            "changes": changes,
+        },
+    )
+    changes[0]["path"] = "malicious-path"
+    assert event.payload["changes"][0]["path"] == "README.md"
+    assert runtime.ingest(event) is ProtocolState.CHANGED
